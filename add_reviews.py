@@ -8,7 +8,7 @@ Usage: ./add_reviews.py feedback_directory django_REST_URL
 Example ./add_reviews.py data/feedback http://127.0.0.1/feedback
 """
 from os import listdir
-from os.path import isfile, join
+from os.path import isfile, join, basename
 import sys
 import requests
 
@@ -18,6 +18,11 @@ def get_files(file_folder, extension):
     return [f for f in listdir(file_folder) if isfile(join(file_folder, f))
             and extension in f]
 
+
+if len(sys.argv) == 1:
+    print("Usage: ./{} feedback_directory django_REST_URL".
+          format(basename(__file__)))
+    sys.exit(2)
 
 try:
     feedback_directory = sys.argv[1]
@@ -42,10 +47,10 @@ for filename in get_files(feedback_directory, ".txt"):
     # For each file make a dictionary
     split_file_contents = file_contents.split("\n")
     try:
-        post_dict = {"title": split_file_contents[0],
-                     "name": split_file_contents[1],
-                     "date": split_file_contents[2],
-                     "feedback": split_file_contents[3]}
+        post_dict = {"title": split_file_contents[0].strip(),
+                     "name": split_file_contents[1].strip(),
+                     "date": split_file_contents[2].strip(),
+                     "feedback": split_file_contents[3].strip()}
     except IndexError:
         print("ERROR: There were not 4 sections in {}".format(filename))
         sys.exit(1)
